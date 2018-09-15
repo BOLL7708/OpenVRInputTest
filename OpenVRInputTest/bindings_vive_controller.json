@@ -1,0 +1,28 @@
+{
+	"bindings": {
+		"/actions/default": {
+			"sources": [
+				{
+					"inputs" : {
+						"click" : {
+							"output" : "/actions/default/in/togglemenu"
+						}
+					},
+					"mode" : "button",
+					"path" : "/user/hand/right/input/application_menu"
+				}, {
+					"inputs" : {
+						"click" : {
+							"output" : "/actions/default/in/togglemenu"
+						}
+					},
+					"mode" : "button",
+					"path" : "/user/hand/left/input/application_menu"
+				}			
+			]
+		}
+	},
+	"controller_type": "vive_controller",
+	"description" : "Default Vive Controller bindings",
+	"name" : "Vive Controller Bindings"
+}

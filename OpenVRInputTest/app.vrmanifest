@@ -1,0 +1,17 @@
+{
+	"applications": [
+		{
+			"app_key": "boll7708.openvrinputtest",
+			"launch_type": "binary",
+			"binary_path_windows": "OpenVRInputTest.exe",
+			"is_dashboard_overlay": false,
+
+			"strings": {
+				"en_us": {
+					"name": "OpenVR Input Test",
+					"description": "Trying to get this thing working."
+				}
+			}
+		}
+	]
+}

@@ -1,0 +1,26 @@
+{
+	"default_bindings": [
+		{
+			"controller_type": "vive_controller",
+			"binding_url": "bindings_vive_controller.json"
+		}
+	],
+	"actions": [
+		{
+			"name": "/actions/default/in/ToggleMenu",
+			"type": "boolean"
+		}
+	],
+	"action_sets": [
+		{
+			"name": "/actions/default",
+			"usage": "leftright"
+		}
+	],
+	"localization" : [
+		{
+			"language_tag": "en_US",
+			"/actions/default/in/ToggleMenu": "Toggle Menu"
+		}
+	]
+}
