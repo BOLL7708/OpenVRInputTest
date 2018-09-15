@@ -13,24 +13,24 @@ namespace OpenVRInputTest
         {
             // Initializing connection to OpenVR
             var error = EVRInitError.None;
-            var initialized = OpenVR.InitInternal(ref error, EVRApplicationType.VRApplication_Background);
+            OpenVR.Init(ref error, EVRApplicationType.VRApplication_Background);
             if (error != EVRInitError.None) Utils.PrintError($"OpenVR initialization errored: {Enum.GetName(typeof(EVRInitError), error)}");
-            if (initialized <= 0) Utils.PrintError("OpenVR failed to initialize.");
             else
             {
                 Utils.PrintInfo("OpenVR initialized successfully.");
 
                 // Loading manifests
-                var appError = OpenVR.Applications.AddApplicationManifest(Path.GetFullPath("./app.vrmanifest"), true);
+                var appError = OpenVR.Applications.AddApplicationManifest(Path.GetFullPath("./app.vrmanifest"), false);
                 if (appError != EVRApplicationError.None) Utils.PrintError($"Failed to load Application Manifest: {Enum.GetName(typeof(EVRApplicationError), appError)}");
-                else Utils.PrintInfo("Loaded Application Manifest successfully.");
+                else Utils.PrintInfo("Application Manifest loaded successfully.");
 
                 var ioErr = OpenVR.Input.SetActionManifestPath(Path.GetFullPath("./actions.json"));
                 if (ioErr != EVRInputError.None) Utils.PrintError($"Failed to load Action Manifest: {Enum.GetName(typeof(EVRInputError), ioErr)}");
-                else Utils.PrintInfo("Loaded Action Manifest successfully.");
+                else Utils.PrintInfo("Action Manifest loaded successfully.");
 
                 // Getting handle
                 OpenVR.Input.GetActionHandle("/actions/main/in/Click", ref mActionHandle);
+                Utils.PrintDebug($"Got Action Handle: {mActionHandle}");
 
                 // Starting worker
                 Utils.PrintDebug("Starting worker thread.");
@@ -51,12 +51,14 @@ namespace OpenVRInputTest
                 uint eventSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf(vrEvent);
                 try { 
                     OpenVR.System.PollNextEvent(ref vrEvent, eventSize);
+                    var pid = vrEvent.data.process.pid;
                     if((EVREventType) vrEvent.eventType != EVREventType.VREvent_None)
                     {
                         var name = Enum.GetName(typeof(EVREventType), vrEvent.eventType);
-                        if(name.ToLower().Contains("fail")) Utils.PrintWarning($"{name}");
-                        else if (name.ToLower().Contains("error")) Utils.PrintError($"{name}");
-                        else Utils.Print($"{name}");
+                        if(name.ToLower().Contains("fail")) Utils.PrintWarning($"[{pid}] {name}");
+                        else if (name.ToLower().Contains("error")) Utils.PrintError($"[{pid}] {name}");
+                        else if (name.ToLower().Contains("successful")) Utils.PrintInfo($"[{pid}] {name}");
+                        else Utils.Print($"[{pid}] {name}");
                     }
                 }
                 catch (Exception e)

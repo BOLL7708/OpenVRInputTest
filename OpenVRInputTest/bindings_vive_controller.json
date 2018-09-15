@@ -1,4 +1,5 @@
 {
+	"app_key": "boll7708.openvrinputtest",
 	"bindings": {
 		"/actions/default": {
 			"sources": [
