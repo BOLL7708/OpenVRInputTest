@@ -7,7 +7,7 @@
 	],
 	"actions": [
 		{
-			"name": "/actions/default/in/ToggleMenu",
+			"name": "/actions/default/in/toggle_menu",
 			"type": "boolean"
 		}
 	],

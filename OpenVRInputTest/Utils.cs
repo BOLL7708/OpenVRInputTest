@@ -15,6 +15,10 @@ namespace OpenVRInputTest
         {
             PrintColor(text, ConsoleColor.White);
         }
+        public static void PrintVerbose(String text)
+        {
+            PrintColor(text, ConsoleColor.Gray);
+        }
         public static void PrintDebug(String text)
         {
             PrintColor(text, ConsoleColor.Cyan);
@@ -32,5 +36,9 @@ namespace OpenVRInputTest
             PrintColor(text, ConsoleColor.Red);
         }
 
+        public static uint SizeOf(object o)
+        {
+            return (uint)System.Runtime.InteropServices.Marshal.SizeOf(o);
+        }
     }
 }
