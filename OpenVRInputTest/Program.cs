@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Valve.VR;
@@ -55,15 +56,28 @@ namespace OpenVRInputTest
             Thread.CurrentThread.IsBackground = true;
             while (true)
             {
-                // Getting recent event, as we're running at 30 fps we'll just load them one per cycle.
+                // Getting events
+                var vrEvents = new List<VREvent_t>();
                 var vrEvent = new VREvent_t();
-                uint eventSize = Utils.SizeOf(vrEvent);
-                try { 
-                    OpenVR.System.PollNextEvent(ref vrEvent, eventSize);
-                    var pid = vrEvent.data.process.pid;
-                    if((EVREventType) vrEvent.eventType != EVREventType.VREvent_None)
+                try
+                {
+                    while (OpenVR.System.PollNextEvent(ref vrEvent, Utils.SizeOf(vrEvent)))
                     {
-                        var name = Enum.GetName(typeof(EVREventType), vrEvent.eventType);
+                        vrEvents.Add(vrEvent);
+                    }
+                } 
+                catch(Exception e)
+                {
+                    Utils.PrintWarning($"Could not get evemt: {e.Message}");
+                }
+
+                // Priting events
+                foreach(var e in vrEvents)
+                {
+                    var pid = e.data.process.pid;
+                    if ((EVREventType)vrEvent.eventType != EVREventType.VREvent_None)
+                    {
+                        var name = Enum.GetName(typeof(EVREventType), e.eventType);
                         var message = $"[{pid}] {name}";
                         if (pid == 0) Utils.PrintVerbose(message);
                         else if (name.ToLower().Contains("fail")) Utils.PrintWarning(message);
@@ -71,10 +85,6 @@ namespace OpenVRInputTest
                         else if (name.ToLower().Contains("success")) Utils.PrintInfo(message);
                         else Utils.Print(message);
                     }
-                }
-                catch (Exception e)
-                {
-                    Utils.PrintWarning($"Could not get evemt: {e.Message}");
                 }
 
                 // Update action set
@@ -101,7 +111,7 @@ namespace OpenVRInputTest
                     // Load action data
                     var action = new InputDigitalActionData_t(); // I assume this is used for boolean inputs.
                     var size = Utils.SizeOf(action);
-                    var error = OpenVR.Input.GetDigitalActionData(mActionHandle, ref action, (uint)size, index);
+                    var error = OpenVR.Input.GetDigitalActionData(mActionHandle, ref action, size, index);
 
                     // Result
                     if (error != mLastError)
