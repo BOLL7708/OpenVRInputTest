@@ -78,6 +78,9 @@
     <None Include="bindings_vive_controller.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="boll7708.openvrinputtest.vrappconfig">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="openvr_api.dll">

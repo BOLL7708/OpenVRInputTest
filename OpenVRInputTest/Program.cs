@@ -71,7 +71,7 @@ namespace OpenVRInputTest
                     Utils.PrintWarning($"Could not get evemt: {e.Message}");
                 }
 
-                // Priting events
+                // Printing events
                 foreach(var e in vrEvents)
                 {
                     var pid = e.data.process.pid;
@@ -80,6 +80,7 @@ namespace OpenVRInputTest
                         var name = Enum.GetName(typeof(EVREventType), e.eventType);
                         var message = $"[{pid}] {name}";
                         if (pid == 0) Utils.PrintVerbose(message);
+                        else if (name == null) Utils.PrintVerbose(message);
                         else if (name.ToLower().Contains("fail")) Utils.PrintWarning(message);
                         else if (name.ToLower().Contains("error")) Utils.PrintError(message);
                         else if (name.ToLower().Contains("success")) Utils.PrintInfo(message);
