@@ -17,6 +17,7 @@ namespace OpenVRInputTest
             // Initializing connection to OpenVR
             var error = EVRInitError.None;
             OpenVR.Init(ref error, EVRApplicationType.VRApplication_Background);
+            var t = new Thread(Worker);
             if (error != EVRInitError.None) Utils.PrintError($"OpenVR initialization errored: {Enum.GetName(typeof(EVRInitError), error)}");
             else
             {
@@ -31,23 +32,23 @@ namespace OpenVRInputTest
                 if (ioErr != EVRInputError.None) Utils.PrintError($"Failed to load Action Manifest: {Enum.GetName(typeof(EVRInputError), ioErr)}");
                 else Utils.PrintInfo("Action Manifest loaded successfully.");
 
-                // Getting action set handle
-                var errorAS = OpenVR.Input.GetActionSetHandle("actions/default", ref mActionSetHandle);
-                if (errorAS != EVRInputError.None) Utils.PrintError($"GetActionSetHandle Error: {Enum.GetName(typeof(EVRInputError), errorAS)}");
-                Utils.PrintDebug($"Action Set Handle: {mActionSetHandle}");
-
                 // Getting action handle.
                 var errorA = OpenVR.Input.GetActionHandle("/actions/default/in/toggle_menu", ref mActionHandle);
                 if (errorA != EVRInputError.None) Utils.PrintError($"GetActionHandle Error: {Enum.GetName(typeof(EVRInputError), errorA)}");
                 Utils.PrintDebug($"Action Handle: {mActionHandle}");
 
+                // Getting action set handle
+                var errorAS = OpenVR.Input.GetActionSetHandle("actions/default", ref mActionSetHandle);
+                if (errorAS != EVRInputError.None) Utils.PrintError($"GetActionSetHandle Error: {Enum.GetName(typeof(EVRInputError), errorAS)}");
+                Utils.PrintDebug($"Action Set Handle: {mActionSetHandle}");
+
                 // Starting worker
                 Utils.PrintDebug("Starting worker thread.");
-                var t = new Thread(Worker);
                 if (!t.IsAlive) t.Start();
                 else Utils.PrintError("Could not start worker thread.");
             }
             Console.ReadLine();
+            t.Abort();
             OpenVR.Shutdown();
         }
 
@@ -108,6 +109,7 @@ namespace OpenVRInputTest
                 {
                     // Get device to restrict to, appears mandatory, makes sense for shared actions.
                     uint index = OpenVR.System.GetTrackedDeviceIndexForControllerRole(role);
+                    Utils.PrintVerbose($"Checking state for {Enum.GetName(typeof(ETrackedControllerRole), role)} ({index})");
 
                     // Load action data
                     var action = new InputDigitalActionData_t(); // I assume this is used for boolean inputs.
@@ -127,7 +129,7 @@ namespace OpenVRInputTest
                 }
 
                 // Restrict rate
-                Thread.Sleep(1000 / 30);
+                Thread.Sleep(1000 / 100);
             }
         }
     }
