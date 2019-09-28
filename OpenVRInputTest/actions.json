@@ -3,11 +3,19 @@
 		{
 			"controller_type": "vive_controller",
 			"binding_url": "bindings_vive_controller.json"
+		},
+		{
+			"controller_type": "knuckles",
+			"binding_url": "bindings_knuckles.json"
 		}
 	],
 	"actions": [
 		{
-			"name": "/actions/default/in/toggle_menu",
+			"name": "/actions/default/in/leftB",
+			"type": "boolean"
+		},
+		{
+			"name": "/actions/default/in/rightB",
 			"type": "boolean"
 		}
 	],
@@ -20,7 +28,8 @@
 	"localization" : [
 		{
 			"language_tag": "en_US",
-			"/actions/default/in/ToggleMenu": "Toggle Menu"
+			"/actions/default/in/leftB": "Left B",
+			"/actions/default/in/rightB": "Right B"
 		}
 	]
 }

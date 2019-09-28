@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Valve.VR;
 
@@ -9,9 +10,11 @@ namespace OpenVRInputTest
     class Program
     {
         static ulong mActionSetHandle;
-        static ulong mActionHandle;
+        static ulong mActionHandleLeftB;
+        static ulong mActionHandleRightB;
         static EVRInputError mLastError;
 
+        // # items are referencing this list of actions: https://github.com/ValveSoftware/openvr/wiki/SteamVR-Input#getting-started
         static void Main(string[] args)
         {
             // Initializing connection to OpenVR
@@ -23,24 +26,29 @@ namespace OpenVRInputTest
             {
                 Utils.PrintInfo("OpenVR initialized successfully.");
 
-                // Loading manifests
+                // Load app manifest
                 var appError = OpenVR.Applications.AddApplicationManifest(Path.GetFullPath("./app.vrmanifest"), false);
                 if (appError != EVRApplicationError.None) Utils.PrintError($"Failed to load Application Manifest: {Enum.GetName(typeof(EVRApplicationError), appError)}");
-                else Utils.PrintInfo("Application Manifest loaded successfully.");
+                else Utils.PrintInfo("Application manifest loaded successfully.");
 
+                // #3 Load action manifest
                 var ioErr = OpenVR.Input.SetActionManifestPath(Path.GetFullPath("./actions.json"));
                 if (ioErr != EVRInputError.None) Utils.PrintError($"Failed to load Action Manifest: {Enum.GetName(typeof(EVRInputError), ioErr)}");
                 else Utils.PrintInfo("Action Manifest loaded successfully.");
 
-                // Getting action handle.
-                var errorA = OpenVR.Input.GetActionHandle("/actions/default/in/toggle_menu", ref mActionHandle);
-                if (errorA != EVRInputError.None) Utils.PrintError($"GetActionHandle Error: {Enum.GetName(typeof(EVRInputError), errorA)}");
-                Utils.PrintDebug($"Action Handle: {mActionHandle}");
+                // #4 Get action handles
+                var errorAL = OpenVR.Input.GetActionHandle("/actions/default/in/leftB", ref mActionHandleLeftB);
+                if (errorAL != EVRInputError.None) Utils.PrintError($"GetActionHandle LeftB Error: {Enum.GetName(typeof(EVRInputError), errorAL)}");
+                Utils.PrintDebug($"Action Handle leftB: {mActionHandleLeftB}");
 
-                // Getting action set handle
+                var errorAR = OpenVR.Input.GetActionHandle("/actions/default/in/rightB", ref mActionHandleRightB);
+                if (errorAR != EVRInputError.None) Utils.PrintError($"GetActionHandle RightB Error: {Enum.GetName(typeof(EVRInputError), errorAR)}");
+                Utils.PrintDebug($"Action Handle rightB: {mActionHandleRightB}");
+
+                // #5 Get action set handle
                 var errorAS = OpenVR.Input.GetActionSetHandle("actions/default", ref mActionSetHandle);
                 if (errorAS != EVRInputError.None) Utils.PrintError($"GetActionSetHandle Error: {Enum.GetName(typeof(EVRInputError), errorAS)}");
-                Utils.PrintDebug($"Action Set Handle: {mActionSetHandle}");
+                Utils.PrintDebug($"Action Set Handle default: {mActionSetHandle}");
 
                 // Starting worker
                 Utils.PrintDebug("Starting worker thread.");
@@ -89,33 +97,43 @@ namespace OpenVRInputTest
                     }
                 }
 
-                // Update action set
+                // #6 Update action set
+
+                var actionSet = new VRActiveActionSet_t[1];
+                var errorUAS = OpenVR.Input.UpdateActionState(actionSet, (uint) Marshal.SizeOf(typeof(VRActiveActionSet_t)));
+
+                /*
                 // Seems I need the action set when updating the state of actions.
-                var actionSet = new VRActiveActionSet_t();
-                actionSet.ulActionSet = mActionSetHandle;
+                var actionSet = new VRActiveActionSet_t
+                {
+                    ulActionSet = mActionSetHandle
+                };
                 var actionSetArr = new VRActiveActionSet_t[1] { actionSet };
+                var activeActionSetSize = Utils.SizeOf(typeof(VRActiveActionSet_t));
 
                 // But I cannot get the size of an array so I supply the one for the set inside the array.
-                // No really sure what I am actually supposed to do here (or above).
-                var errorUAS = OpenVR.Input.UpdateActionState(actionSetArr, Utils.SizeOf(actionSet));
+                // Not really sure what I am supposed to do here (or above).
+                var errorUAS = OpenVR.Input.UpdateActionState(actionSetArr, activeActionSetSize);
                 if (errorUAS != EVRInputError.None)
                 {
                     Utils.PrintError($"UpdateActionState Error: {Enum.GetName(typeof(EVRInputError), errorUAS)}");
                 }
+                */
 
                 // Get input actions
                 var roles = new ETrackedControllerRole[] { ETrackedControllerRole.LeftHand, ETrackedControllerRole.RightHand };
-                foreach (var role in roles)
-                {
+                var role = ETrackedControllerRole.LeftHand;
+//                foreach (var role in roles)
+//                {
                     // Get device to restrict to, appears mandatory, makes sense for shared actions.
                     uint index = OpenVR.System.GetTrackedDeviceIndexForControllerRole(role);
-                    Utils.PrintVerbose($"Checking state for {Enum.GetName(typeof(ETrackedControllerRole), role)} ({index})");
+                    // Utils.PrintVerbose($"Checking state for {Enum.GetName(typeof(ETrackedControllerRole), role)} ({index})");
 
-                    // Load action data
+                    // #7 Load input action data
                     var action = new InputDigitalActionData_t(); // I assume this is used for boolean inputs.
                     var size = Utils.SizeOf(action);
-                    var error = OpenVR.Input.GetDigitalActionData(mActionHandle, ref action, size, index);
-
+                    var error = OpenVR.Input.GetDigitalActionData(mActionHandleLeftB, ref action, size, index);
+                
                     // Result
                     if (error != mLastError)
                     {
@@ -126,7 +144,8 @@ namespace OpenVRInputTest
                     {
                         Utils.PrintInfo($"Action state changed to: {action.bState}");
                     }
-                }
+                    // Utils.PrintInfo($"Action state: {action.bState}");
+//                }
 
                 // Restrict rate
                 Thread.Sleep(1000 / 100);
