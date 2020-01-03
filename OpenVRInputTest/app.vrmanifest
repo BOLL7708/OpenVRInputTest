@@ -5,6 +5,7 @@
 			"launch_type": "binary",
 			"binary_path_windows": "OpenVRInputTest.exe",
 			"is_dashboard_overlay": false,
+			"action_manifest_path": "./actions.json",
 
 			"strings": {
 				"en_us": {

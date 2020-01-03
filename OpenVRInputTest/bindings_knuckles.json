@@ -26,14 +26,18 @@
             {
                "inputs" : {
                   "click" : {
-                     "output" : "/actions/default/in/leftb"
+                     "output" : "/actions/default/in/lefta"
                   }
                },
                "mode" : "button",
                "path" : "/user/hand/left/input/a"
             },
             {
-               "inputs" : {},
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/default/in/righta"
+                  }
+               },
                "mode" : "button",
                "path" : "/user/hand/right/input/a"
             }
@@ -42,8 +46,8 @@
    },
    "category" : "steamvr_input",
    "controller_type" : "knuckles",
-   "description" : "Default Index Controller bindings",
-   "name" : "Index Controller Bindings",
+   "description" : "Placeholder for Index Controller bindings",
+   "name" : "Another Test for OpenVR Input",
    "options" : {},
    "simulated_actions" : []
 }

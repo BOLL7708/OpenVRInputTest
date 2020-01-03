@@ -12,10 +12,22 @@
 	"actions": [
 		{
 			"name": "/actions/default/in/leftB",
+			"requirement": "optional",
 			"type": "boolean"
 		},
 		{
 			"name": "/actions/default/in/rightB",
+			"requirement": "optional",
+			"type": "boolean"
+		},
+		{
+			"name": "/actions/default/in/leftA",
+			"requirement": "optional",
+			"type": "boolean"
+		},
+		{
+			"name": "/actions/default/in/rightA",
+			"requirement": "optional",
 			"type": "boolean"
 		}
 	],
@@ -29,7 +41,9 @@
 		{
 			"language_tag": "en_US",
 			"/actions/default/in/leftB": "Left B",
-			"/actions/default/in/rightB": "Right B"
+			"/actions/default/in/rightB": "Right B",
+			"/actions/default/in/leftA": "Left A",
+			"/actions/default/in/rightA": "Right A"
 		}
 	]
 }
