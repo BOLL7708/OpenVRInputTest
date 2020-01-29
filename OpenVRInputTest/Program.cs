@@ -103,6 +103,10 @@ namespace OpenVRInputTest
 
                 // #6 Update action set, pretty sure this is where things are broken right now.
                 var actionSet = new VRActiveActionSet_t[1];
+                actionSet[0] = new VRActiveActionSet_t();
+                actionSet[0].ulActionSet = mActionSetHandle;
+                // actionSet[0].nPriority = 1;
+
                 var errorUAS = OpenVR.Input.UpdateActionState(actionSet, (uint) Marshal.SizeOf(typeof(VRActiveActionSet_t)));
                 if (errorUAS != EVRInputError.None) Utils.PrintError($"UpdateActionState Error: {Enum.GetName(typeof(EVRInputError), errorUAS)}");
                 // else Utils.PrintInfo($"Action set loaded: {actionSet[0].ulActionSet}");
