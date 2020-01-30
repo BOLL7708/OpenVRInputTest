@@ -12,23 +12,23 @@
 	"actions": [
 		{
 			"name": "/actions/default/in/leftB",
-			"requirement": "optional",
+			"requirement": "mandatory",
 			"type": "boolean"
 		},
 		{
 			"name": "/actions/default/in/rightB",
-			"requirement": "optional",
+			"requirement": "mandatory",
 			"type": "boolean"
 		},
 		{
 			"name": "/actions/default/in/leftA",
 			"requirement": "optional",
-			"type": "boolean"
+			"type": "mandatory"
 		},
 		{
 			"name": "/actions/default/in/rightA",
 			"requirement": "optional",
-			"type": "boolean"
+			"type": "mandatory"
 		}
 	],
 	"action_sets": [

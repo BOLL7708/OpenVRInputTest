@@ -46,8 +46,8 @@
    },
    "category" : "steamvr_input",
    "controller_type" : "knuckles",
-   "description" : "Placeholder for Index Controller bindings",
-   "name" : "Another Test for OpenVR Input",
+   "description" : "Attempt 2 Index Controller bindings",
+   "name" : "My OpenVR Input Test configuration for Index Controller",
    "options" : {},
    "simulated_actions" : []
 }
