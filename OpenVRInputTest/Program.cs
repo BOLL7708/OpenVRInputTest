@@ -13,8 +13,7 @@ namespace OpenVRInputTest
         static ulong mActionSetHandle;
         static ulong mActionHandleLeftB, mActionHandleRightB, mActionHandleLeftA, mActionHandleRightA;
         static VRActiveActionSet_t[] mActionSetArray;
-
-        static EVRInputError mLastError;
+        static InputDigitalActionData_t[] mActionArray;
 
         // # items are referencing this list of actions: https://github.com/ValveSoftware/openvr/wiki/SteamVR-Input#getting-started
         static void Main(string[] args)
@@ -122,24 +121,28 @@ namespace OpenVRInputTest
                         nPriority = 0
                     };
                     mActionSetArray = new VRActiveActionSet_t[] { actionSet };
-                }             
+                }
 
                 var errorUAS = OpenVR.Input.UpdateActionState(mActionSetArray, (uint)Marshal.SizeOf(typeof(VRActiveActionSet_t)));
                 if (errorUAS != EVRInputError.None) Utils.PrintError($"UpdateActionState Error: {Enum.GetName(typeof(EVRInputError), errorUAS)}");
 
                 // #7 Load input action data
+                if(mActionArray == null)
+                {
+                    mActionArray = new InputDigitalActionData_t[] {
+                        new InputDigitalActionData_t(),
+                        new InputDigitalActionData_t(),
+                        new InputDigitalActionData_t(),
+                        new InputDigitalActionData_t()
+                    };
+                }
                 var leftIndex = OpenVR.System.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.LeftHand);
                 var rightIndex = OpenVR.System.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.RightHand);
-                InputDigitalActionData_t
-                    leftB = new InputDigitalActionData_t(),
-                    rightB = new InputDigitalActionData_t(),
-                    leftA = new InputDigitalActionData_t(),
-                    rightA = new InputDigitalActionData_t();
-
-                GetDigitalInput(mActionHandleLeftB, leftIndex, ref leftB);
-                GetDigitalInput(mActionHandleRightB, leftIndex, ref rightB);
-                GetDigitalInput(mActionHandleLeftA, rightIndex, ref leftA);
-                GetDigitalInput(mActionHandleRightA, rightIndex, ref rightA);
+                
+                GetDigitalInput(mActionHandleLeftB, leftIndex, ref mActionArray[0]);
+                GetDigitalInput(mActionHandleRightB, leftIndex, ref mActionArray[1]);
+                GetDigitalInput(mActionHandleLeftA, rightIndex, ref mActionArray[2]);
+                GetDigitalInput(mActionHandleRightA, rightIndex, ref mActionArray[3]);
 
                 // Restrict rate
                 Thread.Sleep(1000 / 10);
@@ -151,7 +154,7 @@ namespace OpenVRInputTest
         private static void GetDigitalInput(ulong handle, uint index, ref InputDigitalActionData_t action)
         {
             var size = (uint)Marshal.SizeOf(typeof(InputDigitalActionData_t));
-            var error = OpenVR.Input.GetDigitalActionData(handle, ref action, size, index);
+            var error = OpenVR.Input.GetDigitalActionData(handle, ref action, size, 0);
 
             // Error
             if (inputErrors.ContainsKey(handle))
