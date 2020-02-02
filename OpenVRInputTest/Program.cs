@@ -136,13 +136,11 @@ namespace OpenVRInputTest
                         new InputDigitalActionData_t()
                     };
                 }
-                var leftIndex = OpenVR.System.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.LeftHand);
-                var rightIndex = OpenVR.System.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.RightHand);
-                
-                GetDigitalInput(mActionHandleLeftB, leftIndex, ref mActionArray[0]);
-                GetDigitalInput(mActionHandleRightB, leftIndex, ref mActionArray[1]);
-                GetDigitalInput(mActionHandleLeftA, rightIndex, ref mActionArray[2]);
-                GetDigitalInput(mActionHandleRightA, rightIndex, ref mActionArray[3]);
+
+                GetDigitalInput(mActionHandleLeftB, ref mActionArray[0]);
+                GetDigitalInput(mActionHandleRightB, ref mActionArray[1]);
+                GetDigitalInput(mActionHandleLeftA, ref mActionArray[2]);
+                GetDigitalInput(mActionHandleRightA, ref mActionArray[3]);
 
                 // Restrict rate
                 Thread.Sleep(1000 / 10);
@@ -151,7 +149,7 @@ namespace OpenVRInputTest
 
         static Dictionary<ulong, EVRInputError> inputErrors = new Dictionary<ulong, EVRInputError>();
 
-        private static void GetDigitalInput(ulong handle, uint index, ref InputDigitalActionData_t action)
+        private static void GetDigitalInput(ulong handle, ref InputDigitalActionData_t action)
         {
             var size = (uint)Marshal.SizeOf(typeof(InputDigitalActionData_t));
             var error = OpenVR.Input.GetDigitalActionData(handle, ref action, size, 0);
