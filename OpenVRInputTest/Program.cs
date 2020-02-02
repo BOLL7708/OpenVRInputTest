@@ -20,14 +20,14 @@ namespace OpenVRInputTest
         {
             // Initializing connection to OpenVR
             var error = EVRInitError.None;
-            OpenVR.Init(ref error, EVRApplicationType.VRApplication_Overlay);
+            OpenVR.Init(ref error, EVRApplicationType.VRApplication_Overlay); // Might need to be overlay because background does not appear to get input events? True for this project, but not in another test project... ?!?!
             var t = new Thread(Worker);
             if (error != EVRInitError.None) Utils.PrintError($"OpenVR initialization errored: {Enum.GetName(typeof(EVRInitError), error)}");
             else
             {
                 Utils.PrintInfo("OpenVR initialized successfully.");
 
-                // Load app manifest
+                // Load app manifest, I think this is needed for the application to show up in the input bindings at all
                 Utils.PrintVerbose("Loading app.vrmanifest");
                 var appError = OpenVR.Applications.AddApplicationManifest(Path.GetFullPath("./app.vrmanifest"), false);
                 if (appError != EVRApplicationError.None) Utils.PrintError($"Failed to load Application Manifest: {Enum.GetName(typeof(EVRApplicationError), appError)}");
