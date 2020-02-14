@@ -11,6 +11,21 @@
 	],
 	"actions": [
 		{
+			"name": "/actions/default/in/enable_chord",
+			"requirement": "optional",
+			"type": "boolean"
+		},
+		{
+			"name": "/actions/default/in/chord1",
+			"requirement": "optional",
+			"type": "boolean"
+		},
+		{
+			"name": "/actions/default/in/chord2",
+			"requirement": "optional",
+			"type": "boolean"
+		},
+		{
 			"name": "/actions/default/in/leftB",
 			"requirement": "optional",
 			"type": "boolean"
@@ -40,6 +55,9 @@
 	"localization" : [
 		{
 			"language_tag": "en_US",
+			"/actions/default/in/enable_chord": "Enable Chord",
+			"/actions/default/in/chord1": "Chord 1",
+			"/actions/default/in/chord2": "Chord 2",
 			"/actions/default/in/leftB": "Left B",
 			"/actions/default/in/rightB": "Right B",
 			"/actions/default/in/leftA": "Left A",

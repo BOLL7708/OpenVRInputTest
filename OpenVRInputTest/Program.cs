@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using Valve.VR;
 
@@ -11,7 +12,7 @@ namespace OpenVRInputTest
     class Program
     {
         static ulong mActionSetHandle;
-        static ulong mActionHandleLeftB, mActionHandleRightB, mActionHandleLeftA, mActionHandleRightA;
+        static ulong mActionHandleLeftB, mActionHandleRightB, mActionHandleLeftA, mActionHandleRightA, mActionHandleChord1, mActionHandleChord2;
         static VRActiveActionSet_t[] mActionSetArray;
         static InputDigitalActionData_t[] mActionArray;
 
@@ -20,7 +21,7 @@ namespace OpenVRInputTest
         {
             // Initializing connection to OpenVR
             var error = EVRInitError.None;
-            OpenVR.Init(ref error, EVRApplicationType.VRApplication_Overlay); // Might need to be overlay because background does not appear to get input events? True for this project, but not in another test project... ?!?!
+            OpenVR.Init(ref error, EVRApplicationType.VRApplication_Background); // Had this as overlay before to get it working, but changing it back is now fine?
             var t = new Thread(Worker);
             if (error != EVRInitError.None) Utils.PrintError($"OpenVR initialization errored: {Enum.GetName(typeof(EVRInitError), error)}");
             else
@@ -57,6 +58,14 @@ namespace OpenVRInputTest
                 var errorAR = OpenVR.Input.GetActionHandle("/actions/default/in/rightA", ref mActionHandleRightA);
                 if (errorAR != EVRInputError.None) Utils.PrintError($"GetActionHandle RightA Error: {Enum.GetName(typeof(EVRInputError), errorAR)}");
                 Utils.PrintDebug($"Action Handle rightA: {mActionHandleRightA}");
+
+                var errorC1 = OpenVR.Input.GetActionHandle("/actions/default/in/chord1", ref mActionHandleChord1);
+                if (errorC1 != EVRInputError.None) Utils.PrintError($"GetActionHandle Chord1 Error: {Enum.GetName(typeof(EVRInputError), errorC1)}");
+                Utils.PrintDebug($"Action Handle rightA: {mActionHandleChord1}");
+
+                var errorC2 = OpenVR.Input.GetActionHandle("/actions/default/in/chord2", ref mActionHandleChord2);
+                if (errorC2 != EVRInputError.None) Utils.PrintError($"GetActionHandle Chord2 Error: {Enum.GetName(typeof(EVRInputError), errorC2)}");
+                Utils.PrintDebug($"Action Handle rightA: {mActionHandleChord2}");
 
                 // #5 Get action set handle
                 Utils.PrintVerbose("Getting action set handle");
@@ -133,14 +142,17 @@ namespace OpenVRInputTest
                         new InputDigitalActionData_t(),
                         new InputDigitalActionData_t(),
                         new InputDigitalActionData_t(),
+                        new InputDigitalActionData_t(),
+                        new InputDigitalActionData_t(),
                         new InputDigitalActionData_t()
                     };
                 }
-
                 GetDigitalInput(mActionHandleLeftB, ref mActionArray[0]);
                 GetDigitalInput(mActionHandleRightB, ref mActionArray[1]);
                 GetDigitalInput(mActionHandleLeftA, ref mActionArray[2]);
                 GetDigitalInput(mActionHandleRightA, ref mActionArray[3]);
+                GetDigitalInput(mActionHandleChord1, ref mActionArray[4]);
+                GetDigitalInput(mActionHandleChord2, ref mActionArray[5]);
 
                 // Restrict rate
                 Thread.Sleep(1000 / 10);
@@ -167,7 +179,7 @@ namespace OpenVRInputTest
             // Result
             if (action.bChanged)
             {
-                Utils.PrintInfo($"Action state changed to: {action.bState}");
+                Utils.PrintInfo($"Action {handle} state changed to: {action.bState}");
             }
 
             Debug.WriteLine($"{handle} Active: {action.bActive}, State: {action.bState}, Changed: {action.bChanged}");
