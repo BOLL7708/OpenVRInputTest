@@ -147,12 +147,21 @@ namespace OpenVRInputTest
                         new InputDigitalActionData_t()
                     };
                 }
-                GetDigitalInput(mActionHandleLeftB, ref mActionArray[0]);
-                GetDigitalInput(mActionHandleRightB, ref mActionArray[1]);
-                GetDigitalInput(mActionHandleLeftA, ref mActionArray[2]);
-                GetDigitalInput(mActionHandleRightA, ref mActionArray[3]);
-                GetDigitalInput(mActionHandleChord1, ref mActionArray[4]);
-                GetDigitalInput(mActionHandleChord2, ref mActionArray[5]);
+
+                ulong leftHandle = 0;
+                OpenVR.Input.GetInputSourceHandle("/user/hand/left", ref leftHandle);
+                ulong rightHandle = 0;
+                OpenVR.Input.GetInputSourceHandle("/user/hand/right", ref rightHandle);
+                var handles = new ulong[3] { leftHandle, rightHandle, 0 };
+                foreach(var handle in handles)
+                {
+                    GetDigitalInput(mActionHandleLeftB, ref mActionArray[0], handle);
+                    GetDigitalInput(mActionHandleRightB, ref mActionArray[1], handle);
+                    GetDigitalInput(mActionHandleLeftA, ref mActionArray[2], handle);
+                    GetDigitalInput(mActionHandleRightA, ref mActionArray[3], handle);
+                    GetDigitalInput(mActionHandleChord1, ref mActionArray[4], handle);
+                    GetDigitalInput(mActionHandleChord2, ref mActionArray[5], handle);
+                }
 
                 // Restrict rate
                 Thread.Sleep(1000 / 10);
@@ -161,10 +170,10 @@ namespace OpenVRInputTest
 
         static Dictionary<ulong, EVRInputError> inputErrors = new Dictionary<ulong, EVRInputError>();
 
-        private static void GetDigitalInput(ulong handle, ref InputDigitalActionData_t action)
+        private static void GetDigitalInput(ulong handle, ref InputDigitalActionData_t action, ulong restrict)
         {
             var size = (uint)Marshal.SizeOf(typeof(InputDigitalActionData_t));
-            var error = OpenVR.Input.GetDigitalActionData(handle, ref action, size, 0);
+            var error = OpenVR.Input.GetDigitalActionData(handle, ref action, size, restrict);
 
             // Error
             if (inputErrors.ContainsKey(handle))
@@ -179,7 +188,7 @@ namespace OpenVRInputTest
             // Result
             if (action.bChanged)
             {
-                Utils.PrintInfo($"Action {handle} state changed to: {action.bState}");
+                Utils.PrintInfo($"Action {handle} state changed to: {action.bState} on: {restrict}");
             }
 
             Debug.WriteLine($"{handle} Active: {action.bActive}, State: {action.bState}, Changed: {action.bChanged}");
