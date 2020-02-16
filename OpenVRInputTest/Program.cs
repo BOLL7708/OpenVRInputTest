@@ -152,7 +152,7 @@ namespace OpenVRInputTest
                 OpenVR.Input.GetInputSourceHandle("/user/hand/left", ref leftHandle);
                 ulong rightHandle = 0;
                 OpenVR.Input.GetInputSourceHandle("/user/hand/right", ref rightHandle);
-                var handles = new ulong[3] { leftHandle, rightHandle, 0 };
+                var handles = new ulong[] { leftHandle, rightHandle };
                 foreach(var handle in handles)
                 {
                     GetDigitalInput(mActionHandleLeftB, ref mActionArray[0], handle);
@@ -188,10 +188,8 @@ namespace OpenVRInputTest
             // Result
             if (action.bChanged)
             {
-                Utils.PrintInfo($"Action {handle} state changed to: {action.bState} on: {restrict}");
+                Utils.PrintInfo($"Action {handle}, Active: {action.bActive}, State: {action.bState} on: {restrict}");
             }
-
-            Debug.WriteLine($"{handle} Active: {action.bActive}, State: {action.bState}, Changed: {action.bChanged}");
         }
     }
 }
